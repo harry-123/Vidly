@@ -3,39 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity;
 using Vidly.Models;
+using Vidly.ViewModels;
 
 namespace Vidly.Controllers
 {
     public class MoviesController : Controller
     {
-        // GET: Movies/Random
+        private ApplicationDbContext _context;
+
+        public MoviesController()
+        {
+            _context = new ApplicationDbContext();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
+
+        // GET: Movies/
         public ActionResult Random()
         {
             Movie movie = new Movie() { Name = "Sharek!" };
-            //return View(movie);
-            //return Content("Hello World");
-            //return HttpNotFound();
-            return RedirectToAction("Index", "Home", new { page="1", name="Harry"});
+
+            List<Customer> cust = new List<Customer>()
+            {
+                new Customer { Name ="Customer 1", Id = 1 },
+                new Customer { Name = "Customer 2", Id = 2}
+            };
+
+            RandomMovieViewModel viewModel = new RandomMovieViewModel();
+            viewModel.Movie = movie;
+            viewModel.Customer = cust;
+            return View(viewModel);
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult Index()
         {
-            return Content("Id = " + id);
+            IEnumerable<Movie> movies = _context.Movies.Include(m => m.Genre).ToList();
+            return View(movies);
         }
 
-        public ActionResult Index(int? pageIndex, string sortBy)
+        public ActionResult Details(int Id)
         {
-            if (!pageIndex.HasValue)
-            {
-                pageIndex = 1;
-            }
-            if (String.IsNullOrWhiteSpace(sortBy))
-            {
-                sortBy = "Name"; 
-            }
-
-            return Content(String.Format("pageIndex = {0}     SortBy = {1}", pageIndex, sortBy));
+            Movie mov = _context.Movies.Include(m => m.Genre).SingleOrDefault(m => m.Id == Id);
+            return View(mov);
         }
 
         [Route("movies/released/{year:range(1900,2050)}/{month:range(1,12)}")]
