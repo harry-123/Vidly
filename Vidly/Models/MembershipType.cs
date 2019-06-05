@@ -13,4 +13,13 @@ namespace Vidly.Models
         public byte DurationInMonths { get; set; }
         public byte DiscountRate { get; set; }
     }
+
+    public enum MembershipTypeNames
+    {
+        Unknown = 0,
+        PayAsYouGo = 1,
+        Monthly = 2,
+        Quarterly = 3,
+        Anually = 4
+    }
 }

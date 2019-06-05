@@ -1,0 +1,56 @@
+﻿@model Vidly.ViewModels.MovieFormViewModel
+
+@{
+    if (Model.Id != 0)
+    {
+        ViewBag.Title = Model.Name;
+        <h2>@Model.Name</h2>
+    }
+    else
+    {
+        ViewBag.Title = "New Movie";
+        <h2>New Movie</h2>
+    }
+  
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<hr />
+
+@using (Html.BeginForm("Save", "Movies")) 
+{
+    @Html.ValidationSummary(true, "Please review following errors.")
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.Name)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ReleaseDate, htmlAttributes: new { @class = "control-label" })
+        @Html.TextBoxFor(model => model.ReleaseDate,  "{0:dd MMM yyyy}", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ReleaseDate)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.NoInStock, htmlAttributes: new { @class = "control-label" })
+        @Html.EditorFor(model => model.NoInStock, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.NoInStock)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.GenreId, htmlAttributes: new { @class = "control-label" })
+        @Html.DropDownListFor(model => model.GenreId, new SelectList(Model.Genres, "Id", "Name"), "--Select the Genre--", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.GenreId)
+    </div>
+
+    @Html.HiddenFor(m=>m.Id)
+    @Html.AntiForgeryToken()
+    <input type="submit" class="btn btn-primary" value="Save"/>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")    
+}

@@ -5,7 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Customers</h2>
+<h2 class="list-topper">Customers</h2>
+
+@Html.ActionLink("New Customer", "New", "", new { @class = "btn btn-primary btn-rg" })
 
 @{
     if (Model.Count == 0)
@@ -14,7 +16,7 @@
     }
     else
     {
-    <table class="table table-hover table-light">
+    <table class="table table-hover table-light table-data">
         <tr>
             <th>ID</th>
             <th>Name</th>
@@ -26,7 +28,7 @@
             {
             <tr>
                 <td>@cust.Id</td>
-                <td>@Html.ActionLink(cust.Name, "CustomerDetails", "Customers", new { Id = cust.Id }, null)</td>
+                <td>@Html.ActionLink(cust.Name, "Edit", "Customers", new { Id = cust.Id }, null)</td>
                 <td>@cust.MembershipType.Name</td>
                 <td>@cust.MembershipType.DiscountRate%</td>
             </tr>
