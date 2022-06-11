@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+﻿using AutoMapper;
+using System;
 using System.Data.Entity;
-using Vidly.Models;
+using System.Linq;
+using System.Web.Http;
 using Vidly.Dtos;
-using AutoMapper;
+using Vidly.Models;
 
 namespace Vidly.Controllers.Api
 {
@@ -22,10 +19,14 @@ namespace Vidly.Controllers.Api
         
         //GET api/movies
         [HttpGet]
-        public IHttpActionResult GetMovies() 
+        public IHttpActionResult GetMovies(string query = null) 
         {
-            var movies = _context.Movies.Include(m => m.Genre);
-            var moviesDto = movies.Select(Mapper.Map<Movie, MovieDto>);
+            var moviesQuery = _context.Movies.Include(m => m.Genre);
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                moviesQuery = moviesQuery.Where(x => x.Name.Contains(query));
+            }
+            var moviesDto = moviesQuery.Select(Mapper.Map<Movie, MovieDto>);
             return Ok(moviesDto);
         }
 

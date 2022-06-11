@@ -34,11 +34,14 @@ textarea {
     float:right;
 }
 
-.field-validation-error, .validation-summary-errors span {
+.field-validation-error,
+.validation-summary-errors span,
+label.error {
     color:#A50203;
 }
 
-.input-validation-error {
+.input-validation-error,
+input.error {
     border:2px solid #A50203;
     background-color: #FFC9C9;
 }
