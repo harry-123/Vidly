@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
@@ -60,8 +61,8 @@ namespace Vidly
 
             var google = new GoogleOAuth2AuthenticationOptions()
             {
-                ClientId = "730189869341-ia57ie1fjhm37uq6qdti0m8ahcu8npc5.apps.googleusercontent.com",
-                ClientSecret = "1MJ5EYFy8hgaEpdrvQNNTZIx",
+                ClientId = ConfigurationManager.AppSettings["GoogleOAuthClientId"],
+                ClientSecret = ConfigurationManager.AppSettings["GoogleOAuthClientSecret"],
                 Provider = new GoogleOAuth2AuthenticationProvider()
             };
             google.Scope.Add("email");
