@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using System;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
+using Vidly.DAL.Services;
 using Vidly.Dtos;
 using Vidly.Models;
 
@@ -10,23 +10,17 @@ namespace Vidly.Controllers.Api
 {
     public class CustomersController : ApiController
     {
+        private readonly ICustomerService _customerService;
 
-        private ApplicationDbContext _context;
-
-        public CustomersController()
+        public CustomersController(ICustomerService customerService)
         {
-            _context = new ApplicationDbContext();
+            _customerService = customerService;
         }
 
         //GET   /api/customers
         public IHttpActionResult GetCustomers(string query = null)
         {
-            var customersQuery = _context.Customers.Include(c => c.MembershipType);
-            if (!string.IsNullOrWhiteSpace(query))
-            {
-                customersQuery = customersQuery.Where(x => x.Name.Contains(query));
-            }
-            var customers = customersQuery.ToList();
+            var customers = _customerService.GetCustomers(query);
             var customerDtos = customers.Select(Mapper.Map<Customer, CustomerDto>);
             return Ok(customerDtos);
         }
@@ -34,13 +28,11 @@ namespace Vidly.Controllers.Api
         //Get   /api/customers/id
         public IHttpActionResult GetCustomer(int id)
         {
-            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
-
+            var customer = _customerService.GetCustomer(id);
             if (customer == null)
             {
                 return NotFound();
             }
-
             return Ok(Mapper.Map<Customer, CustomerDto>(customer));
         }
 
@@ -54,8 +46,7 @@ namespace Vidly.Controllers.Api
             }
 
             Customer customer = Mapper.Map<CustomerDto, Customer>(customerDto);
-            _context.Customers.Add(customer);
-            _context.SaveChanges();
+            customer = _customerService.CreateCustomer(customer);
 
             customerDto.Id = customer.Id;
             return Created(new Uri(Request.RequestUri + "/" + customer.Id), customer);
@@ -69,15 +60,9 @@ namespace Vidly.Controllers.Api
             {
                 return BadRequest();
             }
-
-            var customerInDB = _context.Customers.SingleOrDefault(c => c.Id == id);
-            if(customerInDB == null)
-            {
-                return NotFound();
-            }
-
-            Mapper.Map(customerDto, customerInDB);
-            _context.SaveChanges();
+          
+            var customer =  Mapper.Map<Customer>(customerDto);
+            _customerService.UpdateCustomer(id, customer);
             return Ok();
         }
 
@@ -85,14 +70,7 @@ namespace Vidly.Controllers.Api
         [HttpDelete]
         public IHttpActionResult DeleteCustomer(int id)
         {
-            var customerInDB = _context.Customers.SingleOrDefault(c => c.Id == id);
-            if (customerInDB == null)
-            {
-                return NotFound();
-            }
-
-            _context.Customers.Remove(customerInDB);
-            _context.SaveChanges();
+            _customerService.DeleteCustomer(id);
             return Ok();
         }
     }
